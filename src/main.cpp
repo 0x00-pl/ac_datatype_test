@@ -1,21 +1,34 @@
 #include <bitset>
 #include <iostream>
+#include <fstream>
 #include "ac_datatype/ac_fixed.h"
 #include "vm.hpp"
 #include "io_unit.hpp"
+#include "vcd_tree.hpp"
 
 using namespace std;
 using namespace pl_vm;
 
 void basic_io(){
+    // vm
     vm v;
     auto w1 = v.make_wire<hd_wire<int>>();
     int data[] = {1,2,3,4};
     v.make_unit<input_unit<int>>(w1, data, size(data));
     v.make_unit<print_unit<int>>(w1);
+
+    // vt
+    vcd_tree vt;
+    vt.register_wire(w1, "w1");
+    ofstream vt_out("out.vcd");
+    vt.exports_header(vt_out);
+
+    // loop
     for(size_t i=0; i<5; i++){
         v.tick(0);
+        vt.export_var(vt_out);
     }
+
 }
 
 int main() {
