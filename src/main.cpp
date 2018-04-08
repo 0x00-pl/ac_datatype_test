@@ -13,12 +13,13 @@ void basic_io(){
     // vm
     vm v;
     auto w1 = v.make_wire<hd_wire<int>>();
-    int data[] = {1,2,3,4};
+    int data[] = {1,0,2,3};
     v.make_unit<input_unit<int>>(w1, data, size(data));
     v.make_unit<print_unit<int>>(w1);
 
     // vt
-    vcd_tree vt;
+    vcd_tree vt; vt.name = "top";
+    size_t time = 0;
     vt.register_wire(w1, "w1");
     ofstream vt_out("out.vcd");
     vt.exports_header(vt_out);
@@ -26,7 +27,7 @@ void basic_io(){
     // loop
     for(size_t i=0; i<5; i++){
         v.tick(0);
-        vt.export_var(vt_out);
+        vt.export_var(vt_out, time++);
     }
 
 }

@@ -11,9 +11,25 @@ using namespace std;
 using namespace experimental;
 
 template<typename T>
+struct data_width{
+    static const size_t value = sizeof(T)*8;
+};
+
+template<int W, bool S>
+struct data_width<ac_int<W,S>>{
+    static const size_t value = W;
+};
+
+template<int W, int I, bool S, ac_q_mode Q, ac_o_mode O>
+struct data_width<ac_fixed<W,I,S,Q,O>>{
+    static const size_t value = W;
+};
+
+template<typename T>
 optional<string> data_signals(const optional<T>& t){
     if(t){
-        return to_string(t.value());
+        bitset<data_width<T>::value> bs(t.value());
+        return "b" + bs.to_string();
     } else {
         return {};
     }
@@ -38,21 +54,6 @@ optional<string> data_signals(const optional<ac_fixed<W,I,S,Q,O>>& t){
         return {};
     }
 }
-
-template<typename T>
-struct data_width{
-    static const size_t value = sizeof(T)*8;
-};
-
-template<int W, bool S>
-struct data_width<ac_int<W,S>>{
-    static const size_t value = W;
-};
-
-template<int W, int I, bool S, ac_q_mode Q, ac_o_mode O>
-struct data_width<ac_fixed<W,I,S,Q,O>>{
-    static const size_t value = W;
-};
 
 
 class hd_ticker{

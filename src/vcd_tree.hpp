@@ -54,17 +54,19 @@ public:
         output << "$upscope $end" << endl;
     }
 
-    void export_var(ostream& output, string prefix=""){
+    void export_var(ostream& output, size_t time, string prefix=""){
         prefix = prefix + name;
+        output << "#" << time << endl;
         for(auto i : wire_list){
             auto signal = i.wire.lock()->signals();
             auto id = prefix+i.name;
             if(signal){
-                output << signal.value() << " " << id << endl;
+                auto val = signal.value();
+                output << val << " " << id << endl;
             }
         }
         for(auto i : sub_vcd_tree){
-            i->export_var(output, prefix + "_");
+            i->export_var(output, time, prefix + "_");
         }
     }
 };
