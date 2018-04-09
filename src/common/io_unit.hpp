@@ -17,7 +17,7 @@ public:
     size_t it;
 
     input_unit ( weak_ptr<hd_wire<T>> out_, T* data_, size_t length_ )
-        :output ( out_ ),data ( data_ ),length ( length_ ),it ( 0 ) {}
+        :output ( out_ ), data ( data_ ), length ( length_ ), it ( 0 ) {}
 
     void tick ( int ) override
     {
@@ -27,6 +27,22 @@ public:
         } else {
             o->data = {};
         }
+    }
+};
+
+template<typename T>
+class output_unit : public hd_unit
+{
+public:
+    weak_ptr<hd_wire<T>> input;
+    vector<optional<T>> data;
+
+    output_unit ( weak_ptr<hd_wire<T>> in_w )
+    :input ( in_w ){}
+
+    void tick ( int ) override
+    {
+        data.push_back(*input.lock());
     }
 };
 

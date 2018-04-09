@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ctime"
-#include "vm.hpp"
+#include <ctime>
 #include <vector>
 #include <iostream>
 #include <chrono>
+#include "vm.hpp"
 
 namespace pl_vm {
 
@@ -22,8 +22,16 @@ public:
     vector<shared_ptr<vcd_tree>> sub_vcd_tree;
     string name;
 
-    void register_wire(weak_ptr<hd_wire_base> wire, string wname) {
-        wire_list.push_back(wire_ref {wire,wname});
+    vcd_tree(string name_):name(name_){}
+    void registry_wire(weak_ptr<hd_wire_base> wire, string wname) {
+        wire_list.push_back(wire_ref {wire, wname});
+    }
+
+    template<typename Twire, size_t N>
+    void registry_wire_array(weak_ptr<Twire> (&wire)[N], string prefix="") {
+        for(size_t i=0; i<N; i++){
+            wire_list.push_back(wire_ref {wire[i], prefix+to_string(i)});
+        }
     }
     void add_sub_tree(shared_ptr<vcd_tree> sub) {
         sub_vcd_tree.push_back(sub);
@@ -54,20 +62,25 @@ public:
         output << "$upscope $end" << endl;
     }
 
-    void export_var(ostream& output, size_t time, string prefix=""){
+    void export_var_aux(ostream& output, string prefix=""){
         prefix = prefix + name;
-        output << "#" << time << endl;
         for(auto i : wire_list){
             auto signal = i.wire.lock()->signals();
             auto id = prefix+i.name;
             if(signal){
                 auto val = signal.value();
                 output << val << " " << id << endl;
+            } else {
+                output << "x" << " " << id << endl;
             }
         }
         for(auto i : sub_vcd_tree){
-            i->export_var(output, time, prefix + "_");
+            i->export_var_aux(output, prefix + "_");
         }
+    }
+    void export_var(ostream& output, size_t time, string prefix=""){
+        output << "#" << time << endl;
+        export_var_aux(output, prefix);
     }
 };
 

@@ -31,7 +31,7 @@ optional<string> data_signals(const optional<T>& t){
         bitset<data_width<T>::value> bs(t.value());
         return "b" + bs.to_string();
     } else {
-        return {};
+        return "b" + string(data_width<T>::value, 'x');
     }
 }
 
@@ -41,7 +41,7 @@ optional<string> data_signals(const optional<ac_int<W,S>>& t) {
         bitset<W> b = *(bitset<W>*)&t;
         return "b" + to_string(b);
     } else {
-        return {};
+        return "b" + string(W, 'x');
     }
 }
 
@@ -51,7 +51,7 @@ optional<string> data_signals(const optional<ac_fixed<W,I,S,Q,O>>& t){
         bitset<W> b = *(bitset<W>*)&t;
         return "b" + to_string(b);
     } else {
-        return {};
+        return "b" + string(W, 'x');
     }
 }
 
@@ -70,7 +70,7 @@ public:
 class hd_wire_base : public hd_ticker {
 public:
     virtual ~hd_wire_base(){}
-    virtual optional<string> signals(){ return {}; }
+    virtual optional<string> signals()=0;
     virtual size_t width(){ return 0; }
 };
 
@@ -98,13 +98,13 @@ public:
     vm(){}
 
     template<typename Tunit, typename ...Targs>
-    weak_ptr<Tunit> make_unit(Targs... args){
+    weak_ptr<Tunit> make_unit(Targs&&... args){
         shared_ptr<Tunit> ret = make_shared<Tunit>(args...);
         unit_list.push_back(ret);
         return ret;
     }
     template<typename Twire, typename ...Targs>
-    weak_ptr<Twire> make_wire(Targs... args){
+    weak_ptr<Twire> make_wire(Targs&&... args){
         shared_ptr<Twire> ret = make_shared<Twire>(args...);
         wire_list.push_back(ret);
         return ret;
@@ -112,10 +112,10 @@ public:
 
     void tick(int debug_level) {
         for(auto iter : unit_list){
-            iter.get()->tick(debug_level);
+            iter->tick(debug_level);
         }
         for(auto iter : wire_list){
-            iter.get()->tick(debug_level);
+            iter->tick(debug_level);
         }
     }
 };
