@@ -1,3 +1,5 @@
+#include "common/wave_gen.hpp"
+#include "common/sensor_array.hpp"
 #include "basic_io_test.hpp"
 #include "wav_test.hpp"
 #include "beamformer_test.hpp"

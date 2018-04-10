@@ -1,3 +1,4 @@
+#pragma once
 #include "vm.hpp"
 
 namespace pl_vm {
@@ -19,6 +20,7 @@ public:
         :input {in_w}, output {out_w}, param {param_}, p_buffer(0) {}
 
     void tick(int debug_level) override {
+        (void)debug_level;
         auto data = input.lock()->data;
         p_buffer = p_offset(1);
         buffer[p_offset(0)] = data;

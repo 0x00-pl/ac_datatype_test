@@ -7,7 +7,7 @@ int wav_test() {
     WavHeader h;
     wav_data d = read_wav("data/input.wav", h);
     assert(h.bit == 16);
-    uint16_t* data = d.u16;
+    uint16_t* data = d.u16; (void)data;
 
     cout <<"wav sample size: "<< h.data_size<<endl;
 

@@ -20,6 +20,7 @@ public:
         :input {in_w}, output {out_w}, delay {delay_}, buffer {0}, p_buffer(0) {}
 
     void tick(int debug_level) override {
+        (void)debug_level;
         bool input_unset = false;
         for(size_t i=0; i<Nin; i++) {
             auto data = input[i].lock()->data;
