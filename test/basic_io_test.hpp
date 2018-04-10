@@ -26,7 +26,7 @@ int basic_io_test(){
     size_t time = 0;
     vt.registry_wire(w1, "w1");
     vt.registry_wire(w2, "w2");
-    ofstream vt_out("out.vcd");
+    ofstream vt_out("data/out/basic_io.vcd");
     vt.exports_header(vt_out);
 
     // loop

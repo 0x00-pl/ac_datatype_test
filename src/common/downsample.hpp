@@ -13,14 +13,14 @@ namespace pl_vm {
         size_t counter;
 
         downsample_unit(weak_ptr<hd_wire<T>> in_w, weak_ptr<hd_wire<T>> out_w)
-        :input(in_w), output(out_w){}
+        :input(in_w), output(out_w), counter(0){}
 
         void tick(int debug_level) override {
-            if(++counter >= N){
-                counter = 0;
+            if(counter == 0){
                 last_value = input.lock()->data;
             }
             output.lock()->data = last_value;
+            counter = (counter+1) % N;
         }
     };
 }
